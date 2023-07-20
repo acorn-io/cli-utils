@@ -22,19 +22,6 @@ import (
 func checkGenericProperties(u *unstructured.Unstructured) (*Result, error) {
 	obj := u.UnstructuredContent()
 
-	// Check if the resource is scheduled for deletion
-	deletionTimestamp, found, err := unstructured.NestedString(obj, "metadata", "deletionTimestamp")
-	if err != nil {
-		return nil, fmt.Errorf("looking up metadata.deletionTimestamp from resource: %w", err)
-	}
-	if found && deletionTimestamp != "" {
-		return &Result{
-			Status:     TerminatingStatus,
-			Message:    "Resource scheduled for deletion",
-			Conditions: []Condition{},
-		}, nil
-	}
-
 	res, err := checkGeneration(u)
 	if res != nil || err != nil {
 		return res, err
